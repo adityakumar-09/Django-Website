@@ -1,37 +1,47 @@
 {% extends 'shop/basic.html' %}
 {% block css %} <style>
-.col-md-3
-{
-display: inline-block;
-margin-left:-4px;
-}
-.carousel-indicators .active {
-background-color: blue;
-}
-.col-md-3 img{
-width: 170px;
-height: 200px;
-}
-body .carousel-indicator li{
-background-color: blue;
-}
-body .carousel-indicators{
-bottom: 0;
-}
-body .carousel-control-prev-icon,
-body .carousel-control-next-icon{
-background-color: blue;
-}
-.carousel-control-prev,
-.carousel-control-next{
-top: auto;
-bottom: auto;
-padding-top: 222px;
-}
-body .no-padding{
-padding-left: 0;
-padding-right: 0;
-}
+  .col-md-3 {
+    display: inline-block;
+    margin-left: -4px;
+  }
+
+  .carousel-indicators .active {
+    background-color: blue;
+  }
+
+  .col-md-3 img {
+    width: 170px;
+    height: 200px;
+  }
+
+  body .carousel-indicator li {
+    background-color: blue;
+  }
+
+  .carousel-indicators li {
+    background-color: rgb(158, 167, 254);
+  }
+
+  body .carousel-indicators {
+    bottom: -40px;
+  }
+
+  body .carousel-control-prev-icon,
+  body .carousel-control-next-icon {
+    background-color: blue;
+  }
+
+  .carousel-control-prev,
+  .carousel-control-next {
+    top: auto;
+    bottom: auto;
+    padding-top: 222px;
+  }
+
+  body .no-padding {
+    padding-left: 0;
+    padding-right: 0;
+  }
 </style>{% endblock %}
 {% block body %}
 {% load static %}
@@ -56,7 +66,7 @@ padding-right: 0;
               <div class="card-body">
                 <h5 class="card-title" id="namepr{{i.id}}">{{i.product_name}}</h5>
                 <p class="card-text">{{i.desc|slice:"0:53"}}...</p>
-                <h6 class="card-title" >Price : <span id="pricepr{{i.id}}">{{i.price}}</span></h6>
+                <h6 class="card-title">Price : <span id="pricepr{{i.id}}">{{i.price}}</span></h6>
                 <span id="divpr{{i.id}}" class="divpr">
                   <button id="pr{{i.id}}" class="btn btn-primary cart">Add To Cart</button>
                 </span>
@@ -155,9 +165,17 @@ padding-right: 0;
     a = this.id.slice(7,);
     cart['pr' + a][0] = cart['pr' + a][0] - 1;
     cart['pr' + a][0] = Math.max(0, cart['pr' + a][0]);
-    document.getElementById('valpr' + a).innerHTML = cart['pr' + a][0];
+    if (cart['pr' + a][0] == 0) {
+      document.getElementById('divpr' + a).innerHTML = '<button id="pr' + a + '" class="btn btn-primary cart">Add To Cart</button>';
+      delete cart['pr' + a];
+    }
+    else {
+      document.getElementById('valpr' + a).innerHTML = cart['pr' + a][0];
+    }
     updateCart(cart);
   });
+
+
   $('.divpr').on("click", "button.plus", function () {
     a = this.id.slice(6,);
     cart['pr' + a][0] = cart['pr' + a][0] + 1;

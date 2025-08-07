@@ -24,3 +24,10 @@
     </form>
 </div>
 {% endblock %}
+
+{%block js%}
+{% if thank %}<script>
+alert('Thanks for contacting us. We wil get back to you soon!');
+document.location = "/shop/contact";
+</script>{%endif%}
+{% endblock %}
