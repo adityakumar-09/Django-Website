@@ -1,30 +1,32 @@
 {% extends 'shop/basic.html' %}
 {% block title%} My Awesome Cart Tracker{% endblock %}
 {% block body %}
-<div class="container">
-    <div class="col my-4">
-        <h2>Enter your Order Id and Email address to track your order</h2>
+<div class="container my-5">
+    <div class="col">
+        <h2 class="h4 mb-4">Enter your Order Id and Email address to track your order</h2>
         <form method="post" action="#" id="trackerForm">{% csrf_token %}
             <div class="form-row">
                 <div class="form-group col-md-6">
-                    <label for="inputname">Order Id</label>
+                    <label for="orderId">Order Id</label>
                     <input type="text" class="form-control" id="orderId" name="orderId" placeholder="Order Id">
                 </div>
                 <div class="form-group col-md-6">
-                    <label for="inputEmail4">Email</label>
+                    <label for="email">Email</label>
                     <input type="email" class="form-control" id="email" name="email" placeholder="Email">
                 </div>
-                <button type="submit" class="btn btn-primary">Track Order</button>
             </div>
+            <button type="submit" class="btn btn-primary mt-2">Track Order</button>
+        </form>
     </div>
-    <div class="col my-4">
-        <h2>Your Order Status</h2>
+    <hr class="my-5">
+    <div class="col">
+        <h2 class="h4">Your Order Status</h2>
         <div class="my-4">
             <ul class="list-group" id="items">
-                Enter your order Id and Email and click Track Order to find details about your order!
+                <li class="list-group-item text-muted">Enter your order Id and Email and click Track Order to find details about your order!</li>
             </ul>
         </div>
-        <h2>Your Order Details</h2>
+        <h2 class="h4">Your Order Details</h2>
         <div class="my-4">
             <ul class="list-group" id="citems">
             </ul>
@@ -34,22 +36,22 @@
 {% endblock %}
 {% block js %}
 <script>
-$('#trackerForm').submit(function(event) {
-    $('#items').empty();
-    var formData = {
-        'orderId': $('input[name=orderId]').val(),
-        'email': $('input[name=email]').val(),
-        'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
-    };
-    $.ajax({
+    $('#trackerForm').submit(function (event) {
+        $('#items').empty();
+        $('#citems').empty(); // Clear cart items list on new search
+        var formData = {
+            'orderId': $('input[name=orderId]').val(),
+            'email': $('input[name=email]').val(),
+            'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+        };
+        $.ajax({
             type: 'POST',
             url: '/shop/tracker/',
             data: formData,
             encode: true
         })
-        .done(function(data) {
-            $('#citems').empty();
-            console.log(data)
+        .done(function (data) {
+            console.log(data);
             data = JSON.parse(data);
             if (data['status'] == 'success') {
                 updates = data['updates'];
@@ -63,26 +65,26 @@ $('#trackerForm').submit(function(event) {
                     $('#items').append(mystr);
                 }
                 // Fill in the order details
-            cart = JSON.parse(data['itemsJson']);
-            console.log(cart);
-            for (item in cart) {
-                let name = cart[item][1];
-                let qty = cart[item][0];
-                mystr = `<li class="list-group-item d-flex justify-content-between align-items-center">
+                cart = JSON.parse(data['itemsJson']);
+                console.log(cart);
+                for (item in cart) {
+                    let name = cart[item][1];
+                    let qty = cart[item][0];
+                    mystr = `<li class="list-group-item d-flex justify-content-between align-items-center">
                     ${name}
                     <span class="badge badge-primary badge-pill">${qty}</span>
                 </li>`
-                $('#citems').append(mystr);
-            }
+                    $('#citems').append(mystr);
+                }
             } else {
-                mystr = `<li class="list-group-item d-flex justify-content-between align-items-center">
-                    Sorry, We are not able to fetch this order id and email. Make sure to type correct order Id and email</li>`
+                mystr = `<li class="list-group-item d-flex justify-content-between align-items-center text-danger">
+                    Sorry, we are not able to fetch this order id and email. Make sure to type correct order Id and email.
+                </li>`;
                 $('#items').append(mystr);
                 $('#citems').append(mystr);
             }
-            
         });
-    event.preventDefault();
-});
+        event.preventDefault();
+    });
 </script>
 {% endblock %}
